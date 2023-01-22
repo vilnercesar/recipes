@@ -1,17 +1,19 @@
 
 from django.shortcuts import render
 
+from utils.recipes.factory import make_recipe
+
 # from django.shortcuts import render
 
 
 # Create your views here.
 def home(request):
     return render(request, 'recipes/pages/home.html', context={
-        'nome': 'Vilner César'
+        'recipes': [make_recipe() for _ in range(10)]
     })
 
 
 def recipe(request, id):
     return render(request, 'recipes/pages/recipe-view.html', context={
-        'nome': 'Vilner César'
+        'recipe': make_recipe()
     })

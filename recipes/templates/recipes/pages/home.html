@@ -3,11 +3,11 @@
 {% block tittle %}Home | {% endblock tittle %}
 {% block content %}
     <div class="main-content main-content-list container">
-        {% include 'recipes/partials/recipes.html' %}
-        {% include 'recipes/partials/recipes.html' %}
-        {% include 'recipes/partials/recipes.html' %}
-        {% include 'recipes/partials/recipes.html' %}
-        {% include 'recipes/partials/recipes.html' %}
+        {% for recipe in recipes %}
+             {% include 'recipes/partials/recipes.html' %}
+        {% endfor %}
+        
+       
     
 
     </div>
