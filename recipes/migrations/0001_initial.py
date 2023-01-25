@@ -35,15 +35,15 @@ class Migration(migrations.Migration):
                 ('servings', models.IntegerField()),
                 ('servings_unit', models.CharField(max_length=65)),
                 ('preparation_steps', models.TextField()),
-                ('preparation_steps_is_html', models.BooleanField(default=False)),
+                ('preparation_steps_is_html', models.BooleanField(default=False)),  # noqa:E501
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('is_published', models.BooleanField(default=False)),
-                ('cover', models.ImageField(upload_to='recipes/covers/%Y/%m/%d/')),
+                ('cover', models.ImageField(upload_to='recipes/covers/%Y/%m/%d/')),  # noqa:E501
                 ('author', models.ForeignKey(
-                    null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
+                    null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),  # noqa:E501
                 ('category', models.ForeignKey(
-                    null=True, on_delete=django.db.models.deletion.SET_NULL, to='recipes.category')),
+                    null=True, on_delete=django.db.models.deletion.SET_NULL, to='recipes.category')),  # noqa:E501
             ],
         ),
     ]
