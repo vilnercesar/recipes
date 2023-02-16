@@ -26,8 +26,13 @@ class RegisterForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         add_attr_placeholder(
             self.fields['username'], 'Type your username here')
-        add_attr_placeholder(self.fields['email'], 'Type your email here')
 
+    email = forms.CharField(required=True, widget=forms.EmailInput(
+        attrs={
+            'placeholder': 'Type your email here'
+        }),
+        help_text=('This email must be valid')
+    )
     password = forms.CharField(required=True, widget=forms.PasswordInput(
         attrs={
             'placeholder': 'Your password'
@@ -67,9 +72,6 @@ class RegisterForm(forms.ModelForm):
 
         }
 
-        help_texts = {
-            'email': 'This email must be valid',
-        }
         erros_messages = {
             'user_name': {
                 'required': 'This field not be empty'
