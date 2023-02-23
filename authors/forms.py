@@ -26,14 +26,42 @@ class RegisterForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         add_attr_placeholder(
             self.fields['username'], 'Type your username here')
+        add_attr_placeholder(
+            self.fields['first_name'], 'Type your first name here. Ex.: João')
+        add_attr_placeholder(
+            self.fields['last_name'], 'Type your last name here. Ex.: Campos')
 
-    email = forms.CharField(required=True, widget=forms.EmailInput(
+    username = forms.CharField(
+        label='Username',
+        error_messages={
+            'required': 'This field must not be empty',
+            'min_length': 'Username must have at least 4 characters',
+            'max_length': 'Username must have less than 150 characters',
+        },
+        min_length=4, max_length=150,
+        help_text='Your password must be between 4 and 150 characters long'
+
+    )
+    first_name = forms.CharField(
+
+        label='First Name',
+        error_messages={'required': 'Write your first name'},
+
+    )
+    last_name = forms.CharField(
+        label='Last Name',
+        error_messages={'required': 'Write your last name'}
+    )
+
+    email = forms.CharField(widget=forms.EmailInput(
         attrs={
             'placeholder': 'Type your email here'
         }),
-        help_text=('This email must be valid')
+        error_messages={'required': 'This field must not be empty'},
+        help_text=('This email must be valid'),
+        label='Email address',
     )
-    password = forms.CharField(required=True, widget=forms.PasswordInput(
+    password = forms.CharField(widget=forms.PasswordInput(
         attrs={
             'placeholder': 'Your password'
         }),
@@ -44,14 +72,19 @@ class RegisterForm(forms.ModelForm):
         help_text=('Password must have at least one uppercase letter, '
                    'one lowercase letter and one number. The length should be '
                    'at least 8 characters.'),
-        validators=[strong_password]
+        validators=[strong_password],
+        label='Password'
+
     )
 
-    password2 = forms.CharField(required=True, widget=forms.PasswordInput(
+    password2 = forms.CharField(widget=forms.PasswordInput(
         attrs={
             'placeholder': 'Repeat your password'
         }
-    ))
+    ),
+        error_messages={'required': 'Please, repeat your password'},
+        label='Confirm'
+    )
 
     class Meta:
         model = User
@@ -63,39 +96,15 @@ class RegisterForm(forms.ModelForm):
             'password',
         ]
 
-        labels = {
-            'first_name': 'First Name',
-            'last_name': 'Last Name',
-            'username': 'Username',
-            'email': 'Email address',
-            'password': 'Password'
+    def clean_email(self):
+        email = self.cleaned_data.get('email', '')
+        exists = User.objects.filter(email=email).exists()
 
-        }
-
-        erros_messages = {
-            'user_name': {
-                'required': 'This field not be empty'
-            }
-
-        }
-        widgets = {
-            'first_name': forms.TextInput(attrs={
-                'placeholder': 'Type your first name here Ex.: João'}),
-            'last_name': forms.TextInput(attrs={'placeholder': 'Type your last'
-                                                'name here Ex.: Campos'})
-
-        }
-
-    def clean_password(self):
-        data = self.cleaned_data.get('password')
-
-        if 'teste' in data:
-            raise ValidationError('Não digite %(value)s no campo password',
-                                  code='invalid',
-                                  params={'value': '"teste"'}
-
-                                  )
-        return data
+        if exists:
+            raise ValidationError(
+                'User e-mail is already in use', code='invalid'
+            )
+        return email
 
     def clean(self):
         cleaned_data = super().clean()
@@ -104,6 +113,9 @@ class RegisterForm(forms.ModelForm):
         password2 = cleaned_data.get('password2')
 
         if password != password2:
+            password_confirmation_error = ValidationError(
+                'Passwords do not match', code='invalid')
             raise ValidationError({
-                'password2': 'Passwords do not match',
+                'password': password_confirmation_error,
+                'password2': password_confirmation_error,
             })
